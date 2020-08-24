@@ -170,13 +170,13 @@ else
 	$link_path = normalize_path(APPPATH . '/static/common');
 	@unlink($link_path);@rmdir($link_path);
 	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' && version_compare(php_uname('r'), '6.0', '<')) { //Windows Vista以下
-		echo exec('"'.APPPATH.'/junction.exe" -d "'.$link_path.'"'),'<br />';
-		exec('"'.APPPATH.'/junction.exe" "'.$link_path.'" "'.$target_path.'"', $out);
+		echo exec('"'.MODPATH.'/addons/junction.exe" -d "'.$link_path.'"'),'<br />';
+		exec('"'.MODPATH.'/addons/junction.exe" "'.$link_path.'" "'.$target_path.'"', $out);
 		echo '<pre>',implode('<br />', $out),'</pre>';
 	} else {
 		symlink($target_path, $link_path);
 	}
-	echo 'symlink created!';
+	echo 'symlink created!','<br />';
 
 	echo '--------------------------------------','<br />';
 	echo 'Execute SQL to DATABASE...';
