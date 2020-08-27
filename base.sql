@@ -159,6 +159,7 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
   `nickname` varchar(50) NOT NULL,
   `gid` int(10) unsigned NOT NULL,
   `ip` int(11) NOT NULL,
+  `create_uid` int(10) unsigned DEFAULT NULL,
   `timeline` int(10) unsigned NOT NULL,
   `lastlogin` int(10) unsigned NULL,
   PRIMARY KEY (`uid`)
@@ -167,7 +168,7 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member
 -- ----------------------------
-INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '99', '0', NULL);
+INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '99', '0', '0', unix_timestamp(now()), NULL);
 
 -- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member_extra
@@ -176,7 +177,8 @@ DROP TABLE IF EXISTS `{$PROJECT_NAME}_member_extra`;
 CREATE TABLE `{$PROJECT_NAME}_member_extra` (
   `uid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member_extra

@@ -214,7 +214,7 @@ class Model_Group extends Model_Database {
 		if (is_null($result = $this->get_cache($hashkey)))
 		{
 			$query1 = DB::select(DB::expr('GROUP_CONCAT(CAST(`b`.`id` AS char(11)) )'))->from(array('group_fields','b'))->where('b.pid','=',DB::expr($this->_db->quote_column('a.id')));
-			$query = DB::select('*',array(DB::expr('('.$query1.')'),'children'))->from(array('group_fields','a'));
+			$query = DB::select('*',array(DB::expr('('.$query1.')'),'children'))->from(array('group_fields','a'))->order_by('a.id','ASC');
 			$result = $query->execute()->as_array($as_array);
 			foreach ($result as $key => $value) 
 			{

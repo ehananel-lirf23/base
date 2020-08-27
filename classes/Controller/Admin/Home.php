@@ -3,8 +3,6 @@
 
 class Controller_Admin_Home extends Controller_Template {
 
-	public $template_tips = 'smarty3:admin_tips';
-	
 	public function before()
 	{
 		parent::before();

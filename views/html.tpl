@@ -1,5 +1,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><{$_site.title|escape}><{if !empty($_site.subtitle) && !is_array($_site.subtitle)}> - <{$_site.subtitle|escape}><{/if}><{if !empty($_site.detail)}> - <{$_site.detail|escape}><{/if}></title>
+<meta name="renderer" content="webkit">
 <meta name="Keywords" content="" />
 <meta name="Description" content="" />
 <link rel="shortcut icon" href="<{'static/icons/qq.ico'|url}>" />
