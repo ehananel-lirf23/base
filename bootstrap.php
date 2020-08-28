@@ -155,6 +155,12 @@ Route::set('admin', 'admin(/<controller>(/<action>(/<do>)))')
 		'action'     => 'index',
 	));
 
+Route::set('attachment', 'attachment(/<action>(/<do>(/<filename>(.<ext>))))')
+	->defaults(array(
+		'controller' => 'attachment',
+		'action'     => 'index',
+	));
+
 Route::set('default', '(<controller>(/<action>(/<do>)))')
 	->defaults(array(
 		'controller' => 'home',

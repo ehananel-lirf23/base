@@ -2,6 +2,7 @@
 
 class Controller_Attachment extends Controller_Template {
 
+	private $is_route;
 	public function before()
 	{
 		//解决flash上传的cookie问题
@@ -10,7 +11,10 @@ class Controller_Attachment extends Controller_Template {
 
 		parent::before();
 
-
+		$aid = $this->request->param('do');
+		empty($_GET['aid']) && !empty($aid) && $this->request->query('aid', $_GET['aid'] = $aid);
+		
+		$this->is_route = 'attachment' == Route::name($this->request->route());
 		$this->model['attachment'] = Model::instance('attachment');
 	}
 
@@ -52,13 +56,11 @@ class Controller_Attachment extends Controller_Template {
 			$this->response->status(404);
 			return $this->failure('attachment.failure_noexists');
 		}
-
 		return $this->success('',TRUE,$data);
 	}
 
 	public function action_index($aid, $width = NULL, $height = NULL, $master = Image::AUTO, $quality = 100)
 	{
-
 		$aid = intval($aid);
 		if (empty($aid))
 			return $this->error_param();
@@ -207,7 +209,7 @@ class Controller_Attachment extends Controller_Template {
 				$msg = __($msg, array(':maxsize' => Text::bytes($_config['maxsize']),':ext' => implode(',', $_config['ext'])));
 				$data = array('error' => 1, 'message' => $msg);
 			} else
-				$data['url'] = URL::site('attachment?aid='.$result['aid'], TRUE, FALSE);
+				$data['url'] = $this->model['attachment']->get_url($result['aid'], TRUE, $this->is_route ? $result['original_basename'] : NULL);
 		}
 		return $this->output($data);
 	}
@@ -273,7 +275,7 @@ class Controller_Attachment extends Controller_Template {
 				$result = $this->model['attachment']->upload($this->user['uid'], 'Filedata');
 				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
 					'state' => 'SUCCESS',
-					'url' => URL::site('attachment?aid='.$result['aid'], TRUE, FALSE),
+					'url' => $this->model['attachment']->get_url($result['aid'], TRUE, $this->is_route ? $result['original_basename'] : NULL),
 					'title' => $result['src_basename'],
 					'original' => $result['src_basename'],
 					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
@@ -286,10 +288,10 @@ class Controller_Attachment extends Controller_Template {
 				$fp = fopen($file_path,'wb+');
 				fwrite($fp, base64_decode($_POST['Filedata']));
 				fclose($fp);
-				$result = Model::instance('attachment')->save($this->user['uid'], $file_path, 'scrawl.png');
+				$result = $this->model['attachment']->save($this->user['uid'], $file_path, 'scrawl.png');
 				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
 					'state' => 'SUCCESS',
-					'url' => URL::site('attachment?aid='.$result['aid'], TRUE, FALSE),
+					'url' => $this->model['attachment']->get_url($result['aid'], TRUE, $this->is_route ? $result['original_basename'] : NULL),
 					'title' => $result['src_basename'],
 					'original' => $result['src_basename'],
 					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
@@ -301,10 +303,10 @@ class Controller_Attachment extends Controller_Template {
 				$url = isset($_POST['Filedata']) ? $_POST['Filedata'] : $_GET['Filedata'];
 				$url = to_array($url);$list = array();
 				foreach ($url as $value) {
-					$result = Model::instance('attachment')->download($this->user['uid'], $value);
+					$result = $this->model['attachment']->download($this->user['uid'], $value);
 					$list[] = !is_array($result) ? array('state' => $this->read_message($result), 'source' => $value) : array (
 						'state' => 'SUCCESS',
-						'url' => URL::site('attachment?aid='.$result['aid'], TRUE, FALSE),
+						'url' => $this->model['attachment']->get_url($result['aid'], TRUE, $this->is_route ? $result['original_basename'] : NULL),
 						'title' => $result['src_basename'],
 						'original' => $result['src_basename'],
 						'size' => $result['size'],
@@ -320,10 +322,11 @@ class Controller_Attachment extends Controller_Template {
 			case 'listimage':
 			/* 列出文件 */
 			case 'listfile':
-				$list = Model::instance('attachment')->search(array('ext' => $_config['file_type']['image'], 'duplicate' => TRUE), array('a.timeline' => 'DESC'), $page, $pagesize);
+				$list = $this->model['attachment']->search(array('ext' => $_config['file_type']['image'], 'duplicate' => TRUE), array('a.timeline' => 'DESC'), $page, $pagesize);
+				
 				$data = array(
 					'state' => 'SUCCESS',
-					'list' => array_values(array_map(function($v) {return array('url' => URL::site('attachment?aid='.$v['aid'], TRUE, FALSE));}, $list['data'])),
+					'list' => array_values(array_map(function($v) {return array('url' => $this->model['attachment']->get_url($v['aid'], TRUE, $this->is_route ? $v['original_basename'] : NULL));}, $list['data'])),
 					'start' => $list['page'] * $list['pagesize'],
 					'total' => $list['count'],
 				);
@@ -331,8 +334,6 @@ class Controller_Attachment extends Controller_Template {
 			default:
 				break;
 		}
-		
-		
 		return $this->output($data);
 	}
 
@@ -348,8 +349,8 @@ class Controller_Attachment extends Controller_Template {
 		fwrite($fp, $data[0]);
 		fclose($fp);
 
-		$attachment = Model::instance('attachment')->save($this->user['uid'], $file_path, 'avatar_'.$this->user['uid'].'.jpg');
-		$url = URL::site('attachment?aid='.$attachment['aid'], TRUE, FALSE);
+		$attachment = $this->model['attachment']->save($this->user['uid'], $file_path, 'avatar_'.$this->user['uid'].'.jpg');
+		$url = $this->model['attachment']->get_url($attachment['aid'], TRUE, $this->is_route ? $attachment['original_basename'] : NULL);
 		return $this->success('', $url, array('aid' => $attachment['aid'], 'url' => $url));
 	}
 
