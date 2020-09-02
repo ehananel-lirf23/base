@@ -131,6 +131,8 @@ Kohana::modules(array(
 	'captcha' => MODPATH.'captcha',   // captcha access
 	'image'      => MODPATH.'image',      // Image manipulation
 	'mobile-detect' => MODPATH.'mobile-detect',
+	//'mailer' => MODPATH.'mailer',
+	//'excel' => MODPATH.'excel',
 	// 'minion'     => MODPATH.'minion',     // CLI Tasks
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
