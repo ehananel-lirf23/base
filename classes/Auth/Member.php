@@ -7,25 +7,16 @@ class Auth_Member extends Auth {
 
 		$password = $this->hash_password($username, $password);
 		$uid = Model::instance('member')->check($username, $password);
-		if (!empty($uid))
-		{
-			$this->complete_login($uid);
-			$remember === TRUE && $remember = $this->_config['lifetime'];
-			!empty($remember) && Cookie::set($this->_config['session_key'], $this->make_signature($username, $password), $remember);
-		}
+		!empty($uid) && $this->complete_login($uid);
+
 		return !empty($uid);
 	}
 
-	public function logout($destroy = FALSE, $logout_all = FALSE)
+	public function make_signature($username, $uid)
 	{
-		//destory cookie
-		Cookie::set($this->_config['session_key'], NULL, -1);
-		return parent::logout($destory, $logout_all);
-	}
-
-	public function make_signature($username, $password)
-	{
+		$password = $uid;
 		$data = array('username' => $username, 'password' => $password, 'timeline' => time());
+
 		return Encrypt::instance()->encode(serialize($data));
 	}
 
@@ -43,16 +34,6 @@ class Auth_Member extends Auth {
 	public function get_user($default = NULL)
 	{
 		$uid = $this->_session->get($this->_config['session_key'], $default);
-		if (empty($uid))
-		{
-			$signature = Cookie::get($this->_config['session_key']);
-			$data = $this->resolve_signature($signature);
-			if (!empty($data) && !empty($data['username']))
-			{
-				$uid = Model::instance('member')->check($data['username'], $data['password']);
-				!empty($uid) && $this->complete_login($uid); // relogin
-			}
-		}
 		return intval($uid);
 	}
 

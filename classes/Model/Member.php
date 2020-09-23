@@ -64,8 +64,8 @@ class Model_Member extends Model_Database {
 
 	public function search($fields, $order_by = array('timeline' => 'DESC'), $page = 1, $pagesize = 0)
 	{
-		$_fields = array( 'keywords' => '', 'nickname' => '', 'username' => '', 'username_list' => array(), 'uid' => array(), 'gid' => array(), 'timeline' => array('min' => NULL, 'max' => NULL, ), 'lastlogin' => array('min' => NULL, 'max' => NULL, ), );
-		$fields = to_array_selector($fields,'uid,gid,username_list');
+		$_fields = array( 'keywords' => '', 'nickname' => '', 'username' => '', 'uid' => array(), 'gid' => array(), 'timeline' => array('min' => NULL, 'max' => NULL, ), 'lastlogin' => array('min' => NULL, 'max' => NULL, ), );
+		$fields = to_array_selector($fields,'uid,gid');
 		$fields = _extends($fields, $_fields);
 
 		$query = DB::select()->from(array('member','a'))->join(array('member_extra','b'),'LEFT')->on('a.uid','=','b.uid');
@@ -73,7 +73,6 @@ class Model_Member extends Model_Database {
 		!empty($fields['keywords']) && $query->and_where_open()->and_where('a.nickname','LIKE','%'.$fields['keywords'].'%')->or_where('a.username','LIKE','%'.$fields['keywords'].'%')->where_close();
 		!empty($fields['nickname']) && $query->and_where('a.nickname','LIKE','%'.$fields['nickname'].'%');
 		!empty($fields['username']) && $query->and_where('a.username','LIKE','%'.$fields['username'].'%');
-		!empty($fields['username_list']) && $query->and_where('a.username','IN',$fields['username_list']);
 		!empty($fields['uid']) && $query->and_where('a.uid','IN',$fields['uid']);
 		!empty($fields['gid']) && $query->and_where('a.gid','IN',$fields['gid']);
 		!empty($fields['timeline']['min']) && $query->and_where('a.timeline','>=',$fields['timeline']['min']);
@@ -87,30 +86,6 @@ class Model_Member extends Model_Database {
 		$result = Model::instance('Fields')->fields_to_text($result);
 		return $result;
 	}
-
-	public function search_multi($fields, $order_by = array('a.timeline' => 'DESC'), $page = 1, $pagesize = 0)
-	{
-		$_fields = array( 'username' => '', 'uid' => array(), 'type' => array(), 'value' => array(), 'timeline' => array('min' => NULL, 'max' => NULL, ), 'extra' => '', );
-		$fields = to_array_selector($fields,'uid,type,value');
-		$fields = _extends($fields, $_fields);
-
-		$query = DB::select()->from(array('member','a'))->join(array('member_multi','b'),'INNER')->on('a.uid','=','b.uid');
-
-		!empty($fields['username']) && $query->and_where('a.username','LIKE','%'.$fields['username'].'%');
-		!empty($fields['extra']) && $query->and_where('b.extra','LIKE','%'.$fields['extra'].'%');
-		!empty($fields['uid']) && $query->and_where('b.uid','IN',$fields['uid']);
-		!empty($fields['type']) && $query->and_where('b.type','IN',$fields['type']);
-		!empty($fields['value']) && $query->and_where('b.value','IN',$fields['value']);
-		!empty($fields['timeline']['min']) && $query->and_where('a.timeline','>=',$fields['timeline']['min']);
-		!empty($fields['timeline']['max']) && $query->and_where('a.timeline','<=',$fields['timeline']['max'] + 86400);
-		foreach ($order_by as $key => $value)
-			$query->order_by($key, $value);
-
-		$result = $this->make_page($query,'b.*', 'id', NULL, $page, $pagesize);
-		$result = Model::instance('Fields')->fields_to_text($result);
-		return $result;
-	}
-	
 	/**
 	 * 新增一个用户
 	 *

@@ -1,6 +1,7 @@
 /cache/.kohana_cache
 /cache/smarty_compiled
 /cache/qrcode
+/cache
 /static/common
 /attachments
 /logs
