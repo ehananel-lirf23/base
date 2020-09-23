@@ -162,7 +162,10 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
   `create_uid` int(10) unsigned DEFAULT NULL,
   `timeline` int(10) unsigned NOT NULL,
   `lastlogin` int(10) unsigned NULL,
-  PRIMARY KEY (`uid`)
+  PRIMARY KEY (`uid`),
+  UNIQUE KEY `username` (`username`),
+  KEY `timeline` (`timeline`),
+  KEY `lastlogin` (`lastlogin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
