@@ -19,7 +19,7 @@ class Auth_Member extends Auth {
 	public function logout($destroy = FALSE, $logout_all = FALSE)
 	{
 		//destory cookie
-		Cookie::set($this->_config['session_key'], NULL, -1);
+		Cookie::delete($this->_config['session_key']);
 		return parent::logout($destory, $logout_all);
 	}
 
@@ -31,6 +31,7 @@ class Auth_Member extends Auth {
 
 	public function resolve_signature($signature)
 	{
+		if (empty($signature)) return NULL;
 		$str = Encrypt::instance()->decode($signature);
 		return unserialize($str);
 	}
@@ -46,11 +47,14 @@ class Auth_Member extends Auth {
 		if (empty($uid))
 		{
 			$signature = Cookie::get($this->_config['session_key']);
-			$data = $this->resolve_signature($signature);
-			if (!empty($data) && !empty($data['username']))
+			if (!empty($signature))
 			{
-				$uid = Model::instance('member')->check($data['username'], $data['password']);
-				!empty($uid) && $this->complete_login($uid); // relogin
+				$data = $this->resolve_signature($signature);
+				if (!empty($data) && !empty($data['username']))
+				{
+					$uid = Model::instance('member')->check($data['username'], $data['password']);
+					!empty($uid) && $this->complete_login($uid); // relogin
+				}
 			}
 		}
 		return intval($uid);

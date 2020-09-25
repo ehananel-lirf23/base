@@ -245,7 +245,7 @@ class Model_Member extends Model_Database {
 
 		!empty($uid) && DB::update('member')->set(array('lastlogin' => time()))->where('uid','=',$uid)->execute();
 
-		Model_Log::log(compact('uid'));
+		//Model_Log::log(compact('uid'));
 
 		return intval($uid);
 	}
