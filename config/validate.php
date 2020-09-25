@@ -35,7 +35,7 @@ return array(
 				'text' => '所在地区',
 			),
 			'phone' => array(
-				'verify' => '0,[+]?[\d\\-]*,6,30',
+				'verify' => '0,[+]?[\d\-]*,6,30',
 				'text' => '电话',
 			),
 			'email' => array(
