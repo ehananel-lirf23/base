@@ -225,7 +225,9 @@ class Model_Member extends Model_Database {
 
 	public function clear_cache($uid)
 	{
-		$this->delete_cache($uid);
+		$uid = to_array($uid);
+		foreach ($uid as $v)
+			$this->delete_cache($v);
 	}
 
 	/**

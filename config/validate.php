@@ -94,22 +94,6 @@ return array(
 			),
 		),
 	),
-	'comment' => array(
-		'edit' => array(
-			'content' => array(
-				'verify' => '0,text',
-				'text' => '评论内容'
-			),
-			'score' => array(
-				'verify' => '0,int,0,5',
-				'text' => '打分'
-			),
-			'reply' => array(
-				'verify' => '0,text',
-				'text' => '回复评论'
-			),
-		),
-	),
 	'group' => array(
 		'edit' => array(
 			'group_name' => array(
