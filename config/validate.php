@@ -94,6 +94,54 @@ return array(
 			),
 		),
 	),
+	'fields' => array(
+		'edit' => array(
+			'id' => array(
+				'verify' => '1,int',
+				'text' => 'ID',
+			),
+			'type' => array(
+				'verify' => '1,string',
+				'text' => '类型',
+			),
+			'text' => array(
+				'verify' => '1,string,1,255',
+				'text' => '名称',
+			),
+			'extra' => array(
+				'verify' => '0,string,0,255',
+				'text' => '扩展内容',
+			),
+		),
+		'move' => array(
+			'original_id' => array(
+				'verify' => '1,int',
+				'text' => '拖动ID',
+			),
+			'target_id' => array(
+				'verify' => '1,int',
+				'text' => '目标ID',
+			),
+			'move_type' => array(
+				'verify' => '1,data',
+				'text' => '移动方式',
+				'data' => array('prev','next'),
+			),
+		),
+		'enum' => array(
+			'type' => array(
+				'verify' => '1,[a-z_0-9]*,1',
+				'text' => '类别',
+				'multi' => TRUE,
+			),
+			'comment' => array(
+				'verify' => '1,string,1',
+				'text' => '类别',
+				'multi' => TRUE,
+			),
+
+		),
+	),
 	'group' => array(
 		'edit' => array(
 			'group_name' => array(
