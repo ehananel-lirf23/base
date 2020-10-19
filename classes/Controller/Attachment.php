@@ -38,7 +38,8 @@ class Controller_Attachment extends Controller_Template {
 		$content_length = $data['size'];
 		$last_modified = $data['timeline'];
 		$etag = $data['hash'];
-		$this->response->x_send_file($full_path, $data['displayname'], compact('mime_type', 'etag', 'last_modified', 'content_length'));
+		$cache = TRUE;
+		$this->response->x_send_file($full_path, $data['displayname'], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 
 	}
 
@@ -123,7 +124,8 @@ class Controller_Attachment extends Controller_Template {
 		$content_length = $data['size'];
 		$last_modified = $data['timeline'];
 		$etag = $data['hash'];
-		$this->response->x_send_file($new_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length'));
+		$cache = TRUE;
+		$this->response->x_send_file($new_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 	}
 
 	public function action_phone($aid)
@@ -165,7 +167,8 @@ class Controller_Attachment extends Controller_Template {
 		$content_length = $data['size'];
 		$last_modified = $data['timeline'];
 		$etag = $data['hash'];
-		$this->response->x_send_file($full_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length'));
+		$cache = TRUE;
+		$this->response->x_send_file($full_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 	}
 
 	public function action_redirect($aid)
