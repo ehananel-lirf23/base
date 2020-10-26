@@ -87,7 +87,7 @@ class Auth_Member extends Auth {
 	public function is_online($uid = 0)
 	{
 		empty($uid) && $uid = $this->get_user();
-		return Model::instance('member')->online($uid, $this->_config['online_expire']);
+		return Model::instance('member')->online($uid, $this->_config['online_expire'], FALSE);
 	}
 
 }
