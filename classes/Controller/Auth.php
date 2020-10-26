@@ -13,8 +13,7 @@ class Controller_Auth extends Controller_Template {
 		
 		$result = Auth::instance()->login($username, $password);
 		if ($result === TRUE) //登录成功
-		{
-			$user = Model::instance('member')->get(Auth::instance()->get_user());
+		{	$user = Model::instance('member')->get(Auth::instance()->get_user());
 			$referrer = Cookie::get('referrer',NULL);
 			stripos($referrer,'auth') !== FALSE && $referrer = Route::url('default');
 			if ($user['gid'] == Model_Group::GROUP_ADMIN)

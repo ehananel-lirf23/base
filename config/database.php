@@ -4,6 +4,33 @@ return array
 (
 	'default' => array
 	(
+		'type'       => 'MySQLi',
+		'connection' => array(
+			/**
+			 * The following options are available for MySQL:
+			 *
+			 * string   hostname     server hostname, or socket
+			 * string   database     database name
+			 * string   username     database username
+			 * string   password     database password
+			 * boolean  persistent   use persistent connections?
+			 * array    variables    system variables as "key => value" pairs
+			 *
+			 * Ports and sockets may be appended to the hostname.
+			 */
+			'hostname'   => '{$DATABASE_HOST}',
+			'database'   => '{$DATABASE_NAME}',
+			'username'   => '{$DATABASE_USER}',
+			'password'   => '{$DATABASE_PWD}',
+			'port'       => NULL,
+			'socket'     => NULL
+		),
+		'table_prefix' => '{$PROJECT_NAME}_',
+		'charset'      => 'utf8',
+		'caching'      => FALSE,
+	),
+	'mysql' => array
+	(
 		'type'       => 'MySQL',
 		'connection' => array(
 			/**

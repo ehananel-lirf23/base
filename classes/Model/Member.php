@@ -43,7 +43,9 @@ class Model_Member extends Model_Database {
 		$users = $result['data'];
 		//筛选字段
 		if ($field != '*' && !empty($users))
+		{
 			$users = array_keyfilter_selector($users,'*/'.$field);
+		}
 
 		return $users;
 	}
@@ -81,7 +83,7 @@ class Model_Member extends Model_Database {
 		foreach ($order_by as $key => $value)
 			$query->order_by($key, $value);
 
-		$result = $this->make_page($query,'a.*,b.score,b.used_score', 'a.uid', 'uid', $page, $pagesize);
+		$result = $this->make_page($query,'a.*', 'a.uid', 'uid', $page, $pagesize);
 		$result = Model::instance('Fields')->fields_to_text($result);
 		return $result;
 	}
@@ -125,30 +127,15 @@ class Model_Member extends Model_Database {
 		$query = DB::insert('member', array_keys($_data))->values(array_values($_data))->execute();
 		$uid = array_shift($query);
 
-		$this->add_extra($uid, array('score' => 0, 'used_score' => 0));
-
 		Model_Log::log(compact('uid'));
 		return $uid;
 	}
 
-	/**
-	 * 添加Extra表数据
-	 * @param integer $uid  UID
-	 * @param array $data 用户字段数据
-	 */
 	public function add_extra($uid, $data)
 	{
 		return $this->update_extra($uid, $data);
 	}
 
-	/**
-	 * 添加Multi表数据
-	 * 
-	 * @param integer $uid  UID
-	 * @param mixed $keys 需要添加的字段集，为避免误删其它资料，此处必须填写正确的字段集
-	 * @param array $data 需要添加的数据
-	 * @return boolean 是否添加成功
-	 */
 	public function add_multi($uid, $keys, $data)
 	{
 		return $this->update_multi($uid, $keys, $data);
@@ -159,7 +146,7 @@ class Model_Member extends Model_Database {
 	 *
 	 * @param  int $uid  需要修改的用户UID
 	 * @param  array $data 需要修改的用户数据
-	 * @return boolean       是否成功修改
+	 * @return bool       是否成功修改
 	 */
 	public function update($uid, $data)
 	{
@@ -171,57 +158,25 @@ class Model_Member extends Model_Database {
 		Model_Log::log();
 		return $uid;
 	}
-	/**
-	 * 修改 Extra表中的字段
-	 * 如果不在，则自动添加一行
-	 *
-	 * $addition为TRUE时，实际上执行的是：UPDATE `member_extra` SET `score` = `score` + $data['score'] WHERE `uid` = $uid
-	 * 
-	 * @param  integer $uid  UID
-	 * @param  array $data 需要修改的数据
-	 * @param boolean $addition 是否是相加操作
-	 * @return boolean     返回是否修改成功
-	 */
-	public function update_extra($uid, $data, $addition = FALSE)
+	
+	public function update_extra($uid, $data)
 	{
-		if (empty($uid)) return FALSE;
-		DB::begin();
-		$line = DB::select('*')->from('member_extra')->where('uid','=',$uid)->for_update()->execute()->current();
+		$this->_db->begin();
+		$query = DB::select('*')->from('member_extra')->where('uid','=',$uid);
+		$line = $this->_db->query(Database::SELECT, $query . ' FOR UPDATE');
 		if (!empty($line))
-		{
-			$_data = array();
-			if ($addition) //相加操作
-			{
-				unset($line['uid']);
-				foreach($data as $key => $value)
-					array_key_exists($key, $line) && $_data[$key] = $line[$key] + ($value + 0);
-			}
-			else
-				$_data = &$data;
-			!empty($_data) && DB::update('member_extra')->set($_data)->where('uid','=',$uid)->execute();
-		}
+			DB::update('member_extra')->set($data)->where('uid','=',$uid)->execute();
 		else
-		{
-			$data['uid'] = $uid;
 			DB::insert('member_extra', array_keys($data))->values(array_values($data))->execute();
-		}
-		DB::commit();
+		$this->_db->commit();
 
 		$this->delete_cache($uid);
 		Model_Log::log();
 		return TRUE;
 	}
 
-	/**
-	 * 修改Multi表中的数据
-	 * @param  integer $uid UID
-	 * @param  mixed $keys 需要修改的字段集，为避免误删其它资料，此处必须填写正确的字段集
-	 * @param  array $data 需要修改的数据
-	 * @return boolean     是否修改成功
-	 */
 	public function update_multi($uid, $keys, $data)
 	{
-		if (empty($uid)) return FALSE;
 		$query = DB::insert('member_multi',array('uid','type','value','extra'));
 		$_keys = _array_selector_subkey($keys);
 		foreach ($_keys as $type) {

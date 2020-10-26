@@ -179,15 +179,13 @@ INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '99'
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_member_extra`;
 CREATE TABLE `{$PROJECT_NAME}_member_extra` (
   `uid` int(10) unsigned NOT NULL,
-  `score` int(10) unsigned NOT NULL DEFAULT '0',
-  `used_score` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member_extra
 -- ----------------------------
-INSERT INTO `{$PROJECT_NAME}_member_extra` VALUES ('1', '0', '0');
 
 -- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member_multi

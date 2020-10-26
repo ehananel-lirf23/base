@@ -30,7 +30,8 @@ return array(
 				'text' => '出生年份',
 			),
 			'area' => array(
-				'verify' => '1,int',
+				'verify' => '1,type',
+				'type' => true,
 				'text' => '所在地区',
 			),
 			'phone' => array(
