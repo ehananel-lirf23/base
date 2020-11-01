@@ -21,6 +21,10 @@ return array(
 				'type' => true,
 				'text' => '性别',
 			),
+			'avatar_aid' => array(
+				'verify' => '0,int',
+				'text' => '头像',
+			),
 			'birthyear' => array(
 				'verify' => '1,int,v1940,v'.date('Y'),
 				'text' => '出生年份',
