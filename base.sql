@@ -157,6 +157,9 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
   `username` varchar(255) NOT NULL,
   `password` varchar(50) NOT NULL,
   `nickname` varchar(50) NOT NULL,
+  `sex` int(10) unsigned NOT NULL DEFAULT '0',
+  `avatar_aid` int(10) unsigned NOT NULL DEFAULT '0',
+  `phone` varchar(50) DEFAULT NULL,
   `gid` int(10) unsigned NOT NULL,
   `ip` int(11) NOT NULL,
   `create_uid` int(10) unsigned DEFAULT NULL,
@@ -171,7 +174,7 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member
 -- ----------------------------
-INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '99', '0', '0', unix_timestamp(now()), NULL);
+INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '0', '0', '', '99', '0', '0', unix_timestamp(now()), NULL);
 
 -- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member_extra
