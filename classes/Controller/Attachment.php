@@ -111,11 +111,11 @@ class Controller_Attachment extends Controller_Template {
 		if (!in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
 			return $this->failure('attachment.failure_resize');
 
-		$new_path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.str_replace('.','[dot]',$data['path']).';'.$width.'x'.$height.';'.$master.';'.$quality;
+		$new_path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.str_replace('.','[dot]',$data['path']).';'.$width.'x'.$height.';'.$master.';'.$quality.'.'.$data['ext'];
 		if (!file_exists($new_path))
 		{
 			$full_path = $this->model['attachment']->get_real_rpath($data['path']);
-			$img = Image::factory($full_path);
+			$img = Image::factory($full_path, class_exists('Imagick') ? 'Imagick' : NULL);
 			$img->resize($width, $height, $master);
 			!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
 			$img->save($new_path, $quality);

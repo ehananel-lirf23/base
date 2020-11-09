@@ -50,72 +50,9 @@ class Model_Member extends Model_Database {
 
 	public function get_byusername($username)
 	{
-		$uid = 0;$hashkey = 'username-'.$username;
-		if (is_null($uid = $this->get_cache($hashkey)))
-		{
-			$query = DB::select('uid')->from('member')->where('username','=',$username);
-			$uid = $query->execute()->get('uid');
-			!empty($uid) && $this->set_cache($hashkey, $uid);
-		}
+		$query = DB::select('uid')->from('member')->where('username','=',$username);
+		$uid = $query->execute()->get('uid');
 		return empty($uid) ? FALSE : $this->get($uid);
-	}
-
-	/**
-	 * 根据OPENID查询用户资料
-	 * @param  string  $username     OPENID
-	 * @param  string  $access_token 如果是通过OAuth2授权，则需要传递此参数
-	 * @param  boolean $cache        是否缓存该资料
-	 * @return array                 返回对应资料
-	 */
-	public function get_wechat($username, $access_token = NULL, $cache = TRUE) {
-		if (empty($username))
-			return FALSE;
-
-		$result = array();
-		$hashkey = 'wechat_' . $username;
-		if (!$cache || is_null($result = $this->get_cache($hashkey))) {
-			$result = empty($access_token) ? Model_Wechat::instance()->getUserInfo($username) : Model_Wechat::instance()->getOauthUserinfo($access_token, $username);;
-			if (isset($result['nickname'])) {
-				$aid = Model::instance('attachment')->download(0, $result['headimgurl'], 'wechat-avatar-'.$username, 'jpg');
-				$result['avatar_aid'] = $aid['aid'];
-				$this->set_cache($hashkey, $result, Date::DAY);
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * 更新微信资料(如果没有则添加用户资料)
-	 * 
-	 * @param  string $username      	OPENID
-	 * @param  string $access_token     如果是通过OAuth2授权，则需要传递此参数
-	 * @param  integer $update_expire 	多久更新一次?
-	 * @return integer                  返回UID
-	 */
-	public function update_from_wechat($username, $access_token = NULL, $update_expire = Date::DAY)
-	{
-		if (empty($username))
-			return FALSE;
-
-		$user = $this->get_byusername($username);
-		$uid = !empty($user) ? $user['uid'] : $this->add(0, array('username' => $username ,'password' => Auth::instance()->hash_password($username, $username.$username[3]),'nickname' => ''));
-
-		$hashkey = 'update_wechat_'.$uid;
-		$last = $this->get_cache($hashkey);
-		if (is_null($last) || time() - $last > $update_expire)
-		{
-			$wechat = $this->get_wechat($username, $access_token);
-			if (isset($wechat['nickname']))
-			{
-				$this->update($uid, array(
-					'nickname' => $wechat['nickname'], 
-					'sex' => $wechat['sex'],
-					'avatar_aid' => $wechat['avatar_aid'],
-				));
-				$this->set_cache($hashkey, time());
-			}
-		}
-		return $uid;
 	}
 
 	public function get_list($fields, $order_by = array('timeline' => 'DESC'), $page = 1,$pagesize = 0)
@@ -144,7 +81,7 @@ class Model_Member extends Model_Database {
 		foreach ($order_by as $key => $value)
 			$query->order_by($key, $value);
 
-		$result = $this->make_page($query,'a.*,b.*', 'a.uid', 'uid', $page, $pagesize);
+		$result = $this->make_page($query,'a.*,b.score,b.used_score', 'a.uid', 'uid', $page, $pagesize);
 		$result = Model::instance('Fields')->fields_to_text($result);
 		return $result;
 	}
@@ -309,14 +246,13 @@ class Model_Member extends Model_Database {
 	 */
 	public function delete($uid)
 	{
-		$data = $this->get($uid);
 		DB::delete('member')->where('uid','=',$uid)->execute();
 		DB::delete('member_extra')->where('uid','=',$uid)->execute();
 		DB::delete('member_multi')->where('uid','=',$uid)->execute();
 		//删除其他库的用户数据
 		//Model::instance('message')->delete_byuid($uid);
 
-		$this->delete_cache($uid, 'username-'.$data['username']);
+		$this->delete_cache($uid);
 		Model_Log::log();
 		return TRUE;
 	}
