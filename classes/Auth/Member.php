@@ -11,7 +11,7 @@ class Auth_Member extends Auth {
 		{
 			$this->complete_login($uid);
 			$remember === TRUE && $remember = $this->_config['lifetime'];
-			!empty($remember) && Cookie::set($this->_config['session_key'], $this->make_signature($username, $password), $remember);
+			Cookie::set($this->_config['session_key'], $this->make_signature($username, $password), $remember);
 		}
 		return !empty($uid);
 	}
