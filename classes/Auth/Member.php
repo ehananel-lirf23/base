@@ -16,6 +16,11 @@ class Auth_Member extends Auth {
 		return !empty($uid);
 	}
 
+	public function auto_login($uid)
+	{
+		$this->complete_login($uid);
+	}
+
 	public function logout($destroy = FALSE, $logout_all = FALSE)
 	{
 		//destory cookie
