@@ -92,13 +92,14 @@ class Model_Member extends Model_Database {
 	 * @param  integer $update_expire 	多久更新一次?
 	 * @return integer                  返回UID
 	 */
-	public function update_from_wechat($username, $access_token = NULL, $update_expire = Date::DAY)
+	public function update_from_wechat($username, $access_token = NULL, $gid = NULL, $update_expire = Date::DAY)
 	{
 		if (empty($username))
 			return FALSE;
 
 		$user = $this->get_byusername($username);
-		$uid = !empty($user) ? $user['uid'] : $this->add(0, array('username' => $username ,'password' => Auth::instance()->hash_password($username, $username.$username[3]),'nickname' => ''));
+		is_null($gid) && $gid = Model_Group::GROUP_USER;
+		$uid = !empty($user) ? $user['uid'] : $this->add(0, array('username' => $username ,'password' => Auth::instance()->hash_password($username, $username.$username[3]), 'nickname' => '', 'gid' => $gid));
 
 		$hashkey = 'update_wechat_'.$uid;
 		$last = $this->get_cache($hashkey);
