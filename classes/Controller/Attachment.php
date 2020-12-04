@@ -116,12 +116,18 @@ class Controller_Attachment extends Controller_Template {
 		{
 			$full_path = $this->model['attachment']->get_real_rpath($data['path']);
 			$img = Image::factory($full_path, class_exists('Imagick') ? 'Imagick' : NULL);
-			$img->resize($width, $height, $master);
 			!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
-			$img->save($new_path, $quality);
+
+			if ((!is_null($width) && $img->width > $width) || (!is_null($height) && $img->height > $height))
+			{
+				$img->resize($width, $height, $master);
+				$img->save($new_path, $quality);
+			}
+			else
+				symlink($full_path, $new_path);
 		}
 		$mime_type = File::mime_by_ext($data['ext']);
-		$content_length = $data['size'];
+		$content_length = NULL;//$data['size'];
 		$last_modified = $data['timeline'];
 		$etag = $data['hash'];
 		$cache = TRUE;
