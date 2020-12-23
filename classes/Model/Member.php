@@ -84,6 +84,12 @@ class Model_Member extends Model_Database {
 		return $result;
 	}
 
+	public function auto_password($username)
+	{
+		$username = strtolower($username);
+		return md5($username.Kohana::$config->load('auth.hash_key').md5($username));
+	}
+
 	/**
 	 * 更新微信资料(如果没有则添加用户资料)
 	 * 
@@ -99,7 +105,7 @@ class Model_Member extends Model_Database {
 
 		$user = $this->get_byusername($username);
 		is_null($gid) && $gid = Model_Group::GROUP_USER;
-		$uid = !empty($user) ? $user['uid'] : $this->add(0, array('username' => $username ,'password' => Auth::instance()->hash_password($username, $username.$username[3]), 'nickname' => '', 'gid' => $gid));
+		$uid = !empty($user) ? $user['uid'] : $this->add(0, array('username' => $username ,'password' => Auth::instance()->hash_password($username, $this->auto_password($username)), 'nickname' => '', 'gid' => $gid));
 
 		$hashkey = 'update_wechat_'.$uid;
 		$last = $this->get_cache($hashkey);
@@ -191,6 +197,7 @@ class Model_Member extends Model_Database {
 
 		$this->add_extra($uid, array('score' => 0, 'used_score' => 0));
 
+		$this->delete_cache('username-'.$_data['username']);
 		Model_Log::log(compact('uid'));
 		return $uid;
 	}
