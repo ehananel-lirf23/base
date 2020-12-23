@@ -26,7 +26,7 @@ return array
 			'socket'     => NULL
 		),
 		'table_prefix' => '{$PROJECT_NAME}_',
-		'charset'      => 'utf8',
+		'charset'      => 'utf8mb4',
 		'caching'      => FALSE,
 	),
 	'mysql' => array
@@ -52,7 +52,7 @@ return array
 			'persistent' => FALSE,
 		),
 		'table_prefix' => '{$PROJECT_NAME}_',
-		'charset'      => 'utf8',
+		'charset'      => 'utf8mb4',
 		'caching'      => FALSE,
 	),
 	'alternate' => array(
@@ -77,7 +77,7 @@ return array
 		 * string   identifier  set the escaping identifier
 		 */
 		'table_prefix' => '{$PROJECT_NAME}_',
-		'charset'      => 'utf8',
+		'charset'      => 'utf8mb4',
 		'caching'      => FALSE,
 	),
 );

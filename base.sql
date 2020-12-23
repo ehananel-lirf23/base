@@ -1,9 +1,9 @@
-SET NAMES 'UTF8';
+SET NAMES 'utf8mb4';
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-CREATE DATABASE IF NOT EXISTS `{$DATABASE_NAME}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `{$DATABASE_NAME}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `{$DATABASE_NAME}`;
 -- Table structure for {$PROJECT_NAME}_fields
 -- ----------------------------
@@ -15,7 +15,7 @@ CREATE TABLE `{$PROJECT_NAME}_fields` (
   `order` int(11) NOT NULL,
   `extra` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_fields
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group` (
   `group_name` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`gid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
 
 --
 -- 转存表中的数据 `{$PROJECT_NAME}_group`
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_auth` (
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `gid` (`gid`,`auth_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='用户组权限表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户组权限表' AUTO_INCREMENT=1 ;
 
 --
 -- 转存表中的数据 `{$PROJECT_NAME}_group_auth`
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_fields` (
   `value` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_name` (`auth_name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=11 ;
 
 --
 -- 转存表中的数据 `{$PROJECT_NAME}_group_fields`
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_member` (
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`,`auth_name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户权限表' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='用户权限表' AUTO_INCREMENT=1 ;
 
 -- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member
@@ -170,7 +170,7 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
   UNIQUE KEY `username` (`username`),
   KEY `timeline` (`timeline`),
   KEY `lastlogin` (`lastlogin`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member
@@ -186,7 +186,7 @@ CREATE TABLE `{$PROJECT_NAME}_member_extra` (
   `score` int(10) unsigned NOT NULL DEFAULT '0',
   `used_score` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of {$PROJECT_NAME}_member_extra
@@ -206,7 +206,7 @@ CREATE TABLE `{$PROJECT_NAME}_member_multi` (
   PRIMARY KEY (`id`),
   KEY `type` (`type`),
   KEY `uid` (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -221,7 +221,7 @@ CREATE TABLE `{$PROJECT_NAME}_attachment` (
   `uid` int(10) unsigned NOT NULL,
   `timeline` int(10) unsigned NOT NULL,
   PRIMARY KEY (`aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for galaxy_attachment_files
@@ -238,7 +238,7 @@ CREATE TABLE `{$PROJECT_NAME}_attachment_files` (
   UNIQUE KEY `hash_2` (`hash`,`size`),
   KEY `hash` (`hash`) USING BTREE,
   KEY `size` (`size`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -259,4 +259,4 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_log` (
   KEY `operation` (`operation`),
   KEY `uid` (`uid`),
   KEY `timeline` (`timeline`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 ;
