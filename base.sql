@@ -5,8 +5,39 @@ SET time_zone = "+00:00";
 
 CREATE DATABASE IF NOT EXISTS `{$DATABASE_NAME}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `{$DATABASE_NAME}`;
+
+DROP TABLE IF EXISTS `{$PROJECT_NAME}_attachment`;
+CREATE TABLE `{$PROJECT_NAME}_attachment` (
+  `aid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `afid` int(10) unsigned NOT NULL COMMENT '文件ID',
+  `filename` varchar(255) NOT NULL COMMENT '显示的文件名',
+  `ext` varchar(50) NOT NULL COMMENT '显示的扩展名',
+  `src_basename` varchar(255) NOT NULL COMMENT '原始名称',
+  `description` text COMMENT '附件描述',
+  `uid` int(10) unsigned NOT NULL,
+  `timeline` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`aid`),
+  KEY `afid` (`afid`),
+  KEY `ext` (`ext`),
+  KEY `timeline` (`timeline`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- Table structure for attachment_files
+DROP TABLE IF EXISTS `{$PROJECT_NAME}_attachment_files`;
+CREATE TABLE `{$PROJECT_NAME}_attachment_files` (
+  `afid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `basename` varchar(255) NOT NULL COMMENT '本地文件名',
+  `path` varchar(255) NOT NULL COMMENT '本地文件路径',
+  `hash` varchar(50) DEFAULT NULL COMMENT '文件的MD5',
+  `size` bigint(20) NOT NULL DEFAULT '0' COMMENT '文件大小',
+  `timeline` int(10) unsigned DEFAULT NULL COMMENT '生成时间',
+  PRIMARY KEY (`afid`),
+  UNIQUE KEY `hash_2` (`hash`,`size`),
+  KEY `hash` (`hash`),
+  KEY `size` (`size`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
 -- Table structure for {$PROJECT_NAME}_fields
--- ----------------------------
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_fields`;
 CREATE TABLE `{$PROJECT_NAME}_fields` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -14,20 +45,16 @@ CREATE TABLE `{$PROJECT_NAME}_fields` (
   `text` varchar(255) NOT NULL,
   `order` int(11) NOT NULL,
   `extra` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `order` (`order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------
 -- Records of {$PROJECT_NAME}_fields
--- ----------------------------
 INSERT INTO `{$PROJECT_NAME}_fields` VALUES ('1', 'sex', '男', '1', null);
 INSERT INTO `{$PROJECT_NAME}_fields` VALUES ('2', 'sex', '女', '2', null);
 
--- --------------------------------------------------------
-
---
 -- 表的结构 `{$PROJECT_NAME}_group`
---
 
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_group`;
 CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group` (
@@ -37,34 +64,27 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group` (
   PRIMARY KEY (`gid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
 
---
 -- 转存表中的数据 `{$PROJECT_NAME}_group`
---
 
 INSERT INTO `{$PROJECT_NAME}_group` (`gid`, `group_name`, `description`) VALUES
 (99, '管理员', NULL),
 (0, '游客', NULL),
 (1, '普通用户', NULL);
 UPDATE `{$PROJECT_NAME}_group` SET `gid` = 0 WHERE `group_name` = '游客';
--- --------------------------------------------------------
 
---
 -- 表的结构 `{$PROJECT_NAME}_group_auth`
---
 
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_group_auth`;
 CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_auth` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `gid` int(10) unsigned NOT NULL,
-  `auth_name` varchar(255) NOT NULL,
+  `auth_name` varchar(240) NOT NULL,
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `gid` (`gid`,`auth_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COMMENT='用户组权限表' AUTO_INCREMENT=1 ;
 
---
 -- 转存表中的数据 `{$PROJECT_NAME}_group_auth`
---
 
 INSERT INTO `{$PROJECT_NAME}_group_auth` (`gid`, `auth_name`, `value`) VALUES
 (99, 'allow_delete_group', '1'),
@@ -98,11 +118,7 @@ INSERT INTO `{$PROJECT_NAME}_group_auth` (`gid`, `auth_name`, `value`) VALUES
 (1, 'allow_view_member', NULL),
 (1, 'allow_view_admin', NULL);
 
--- --------------------------------------------------------
-
---
 -- 表的结构 `{$PROJECT_NAME}_group_fields`
---
 
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_group_fields`;
 CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_fields` (
@@ -114,11 +130,11 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_fields` (
   `value` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_name` (`auth_name`)
+  KEY `pid` (`pid`),
+  KEY `type` (`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=11 ;
 
---
 -- 转存表中的数据 `{$PROJECT_NAME}_group_fields`
---
 
 INSERT INTO `{$PROJECT_NAME}_group_fields` (`id`, `auth_name`, `text`, `pid`, `type`, `value`) VALUES
 (1, 'allow_view_admin', '允许查看后台页面', 0, 'boolean', NULL),
@@ -132,29 +148,23 @@ INSERT INTO `{$PROJECT_NAME}_group_fields` (`id`, `auth_name`, `text`, `pid`, `t
 (9, 'allow_delete_member_admin', '允许删除管理员账号', 2, 'boolean', NULL),
 (10, 'allow_delete_group', '允许删除用户组', 3, 'boolean', NULL);
 
--- --------------------------------------------------------
-
---
 -- 表的结构 `{$PROJECT_NAME}_group_member`
---
 
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_group_member`;
 CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_member` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(10) unsigned NOT NULL,
-  `auth_name` varchar(255) NOT NULL,
+  `auth_name` varchar(240) NOT NULL,
   `value` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`,`auth_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='用户权限表' AUTO_INCREMENT=1 ;
 
--- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member
--- ----------------------------
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_member`;
 CREATE TABLE `{$PROJECT_NAME}_member` (
   `uid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) NOT NULL,
+  `username` varchar(250) NOT NULL,
   `password` varchar(50) NOT NULL,
   `nickname` varchar(50) NOT NULL,
   `realname` varchar(50) DEFAULT NULL,
@@ -168,34 +178,38 @@ CREATE TABLE `{$PROJECT_NAME}_member` (
   `lastlogin` int(10) unsigned NULL,
   PRIMARY KEY (`uid`),
   UNIQUE KEY `username` (`username`),
+  KEY `gid` (`gid`),
+  KEY `sex` (`sex`),
   KEY `timeline` (`timeline`),
   KEY `lastlogin` (`lastlogin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------
 -- Records of {$PROJECT_NAME}_member
--- ----------------------------
 INSERT INTO `{$PROJECT_NAME}_member` VALUES ('1', 'admin', '', '管理员', '', '0', '0', '', '99', '0', '0', unix_timestamp(now()), NULL);
 
--- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member_extra
--- ----------------------------
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_member_extra`;
 CREATE TABLE `{$PROJECT_NAME}_member_extra` (
   `uid` int(10) unsigned NOT NULL,
-  `score` int(10) unsigned NOT NULL DEFAULT '0',
-  `used_score` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`uid`)
+  `money` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '帐户余额',
+  `expense` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '已消费',
+  `score` int(10) NOT NULL DEFAULT '0' COMMENT '积分',
+  `used_score` int(10) NOT NULL DEFAULT '0' COMMENT '已使用积分',
+  `voucher` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '代金券',
+  `used_voucher` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '已使用代金券',
+  PRIMARY KEY (`uid`),
+  KEY `money` (`money`),
+  KEY `expense` (`expense`),
+  KEY `score` (`score`),
+  KEY `used_score` (`used_score`),
+  KEY `voucher` (`voucher`),
+  KEY `used_voucher` (`used_voucher`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------
 -- Records of {$PROJECT_NAME}_member_extra
--- ----------------------------
-INSERT INTO `{$PROJECT_NAME}_member_extra` VALUES ('1', '0', '0');
+INSERT INTO `{$PROJECT_NAME}_member_extra` VALUES ('1', '0', '0', '0', '0', '0', '0');
 
--- ----------------------------
 -- Table structure for {$PROJECT_NAME}_member_multi
--- ----------------------------
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_member_multi`;
 CREATE TABLE `{$PROJECT_NAME}_member_multi` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -208,43 +222,7 @@ CREATE TABLE `{$PROJECT_NAME}_member_multi` (
   KEY `uid` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
-
-
-DROP TABLE IF EXISTS `{$PROJECT_NAME}_attachment`;
-CREATE TABLE `{$PROJECT_NAME}_attachment` (
-  `aid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `afid` int(10) unsigned NOT NULL COMMENT '文件ID',
-  `filename` varchar(255) NOT NULL COMMENT '显示的文件名',
-  `ext` varchar(50) NOT NULL COMMENT '显示的扩展名',
-  `src_basename` varchar(255) NOT NULL COMMENT '原始名称',
-  `description` text COMMENT '附件描述',
-  `uid` int(10) unsigned NOT NULL,
-  `timeline` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Table structure for galaxy_attachment_files
--- ----------------------------
-DROP TABLE IF EXISTS `{$PROJECT_NAME}_attachment_files`;
-CREATE TABLE `{$PROJECT_NAME}_attachment_files` (
-  `afid` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `basename` varchar(255) NOT NULL COMMENT '本地文件名',
-  `path` varchar(255) NOT NULL COMMENT '本地文件路径',
-  `hash` varchar(50) DEFAULT NULL COMMENT '文件的MD5',
-  `size` bigint(20) NOT NULL DEFAULT '0' COMMENT '文件大小',
-  `timeline` int(10) unsigned DEFAULT NULL COMMENT '生成时间',
-  PRIMARY KEY (`afid`),
-  UNIQUE KEY `hash_2` (`hash`,`size`),
-  KEY `hash` (`hash`) USING BTREE,
-  KEY `size` (`size`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- 表的结构 `store_log`
---
+-- 表的结构 `log`
 
 DROP TABLE IF EXISTS `{$PROJECT_NAME}_log`;
 CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_log` (
@@ -252,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_log` (
   `uid` int(10) unsigned NOT NULL,
   `timeline` int(10) unsigned NOT NULL,
   `ip` int(11) NOT NULL,
-  `operation` varchar(255) NOT NULL,
+  `operation` varchar(250) NOT NULL,
   `request` text,
   `data` text,
   PRIMARY KEY (`lid`),
