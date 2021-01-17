@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `{$PROJECT_NAME}_group_fields` (
   `type` enum('boolean','number','string','text') NOT NULL DEFAULT 'boolean',
   `value` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `auth_name` (`auth_name`)
+  UNIQUE KEY `auth_name` (`auth_name`),
   KEY `pid` (`pid`),
   KEY `type` (`type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=11 ;
