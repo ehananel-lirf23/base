@@ -124,6 +124,7 @@ Kohana::modules(array(
 	'addons' 	=> MODPATH.'addons',   // addons, fixed some bug
 	'auth'       => MODPATH.'auth',       // Basic authentication
 	'cache'      => MODPATH.'cache',      // Caching with multiple backends
+	//'redis' => MODPATH.'redis',
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	'database'   => MODPATH.'database',   // Database access
 	//'qrcode'     => MODPATH.'qrcode',   // qrcode access
@@ -139,7 +140,13 @@ Kohana::modules(array(
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	));
 
-
+/**
+ * Cookie Salt
+ * @see  http://kohanaframework.org/3.3/guide/kohana/cookies
+ * 
+ * If you have not defined a cookie salt in your Cookie class then
+ * uncomment the line below and define a preferrably long salt.
+ */
 Cookie::$salt = '{$PROJECT_NAME}_';
 Cookie::$expiration = Date::WEEK;
 Cookie::$path = Kohana::$base_url;

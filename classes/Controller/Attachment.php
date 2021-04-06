@@ -33,6 +33,9 @@ class Controller_Attachment extends Controller_Template {
 			return $this->failure('attachment.failure_noexists');
 		}
 
+		//获取远程文件
+		$this->model['attachment']->sync($aid);
+
 		$full_path = $this->model['attachment']->get_real_rpath($data['path']);
 		$mime_type = File::mime_by_ext($data['ext']);
 		$content_length = $data['size'];
@@ -111,7 +114,11 @@ class Controller_Attachment extends Controller_Template {
 		if (!in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
 			return $this->failure('attachment.failure_resize');
 
-		$new_path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.str_replace('.','[dot]',$data['path']).';'.$width.'x'.$height.';'.$master.';'.$quality.'.'.$data['ext'];
+
+		//获取远程文件
+		$this->model['attachment']->sync($aid);
+
+		$new_path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.str_replace('.','[dot]',$this->model['attachment']->get_relative_rpath($data['path'])).';'.$width.'x'.$height.';'.$master.';'.$quality.'.'.$data['ext'];
 		if (!file_exists($new_path))
 		{
 			$full_path = $this->model['attachment']->get_real_rpath($data['path']);
@@ -167,6 +174,9 @@ class Controller_Attachment extends Controller_Template {
 			$this->response->status(404);
 			return $this->failure('attachment.failure_noexists');
 		}
+
+		//获取远程文件
+		$this->model['attachment']->sync($aid);
 
 		$full_path = $this->model['attachment']->get_real_rpath($data['path']);
 		$mime_type = File::mime_by_ext($data['ext']);

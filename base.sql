@@ -33,6 +33,7 @@ CREATE TABLE `{$PROJECT_NAME}_attachment_files` (
   `timeline` int(10) unsigned DEFAULT NULL COMMENT '生成时间',
   PRIMARY KEY (`afid`),
   UNIQUE KEY `hash_2` (`hash`,`size`),
+  KEY `basename` (`basename`),
   KEY `hash` (`hash`),
   KEY `size` (`size`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
