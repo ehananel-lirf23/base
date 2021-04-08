@@ -195,7 +195,7 @@ class Model_Member extends Model_Database {
 		$query = DB::insert('member', array_keys($_data))->values(array_values($_data))->execute();
 		$uid = array_shift($query);
 
-		$this->add_extra($uid, array('score' => 0, 'used_score' => 0));
+		$this->add_extra($uid, array('money' => 0, 'expense' => 0, 'score' => 0, 'used_score' => 0, 'voucher' => 0, 'used_voucher' => 0));
 
 		$this->delete_cache('username-'.$_data['username']);
 		Model_Log::log(compact('uid'));
